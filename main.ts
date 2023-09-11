@@ -8,21 +8,6 @@ interface Options {
   timeout: number;
 }
 
-const fetchWithTimeout = async (url: string, options: Options) => {
-  const { timeout = 5000 } = options;
-
-  const controller = new AbortController();
-  const id = setTimeout(() => controller.abort(), timeout);
-
-  const response = await fetch(url, {
-    ...options,
-    signal: controller.signal,
-  });
-  clearTimeout(id);
-
-  return response;
-};
-
 // The JSON array of server URLs and priorities
 const serverList: Server[] = [
   {
@@ -43,7 +28,34 @@ const serverList: Server[] = [
   },
 ];
 
-// Function to check if a server is online or offline
+/**
+ * Custom fetch function to have timeout 5s
+ *
+ * @param url <string>
+ * @param options <Options>
+ * @returns Promise<Response>
+ */
+const fetchWithTimeout = async (url: string, options: Options) => {
+  const { timeout = 5000 } = options;
+
+  const controller = new AbortController();
+  const id = setTimeout(() => controller.abort(), timeout);
+
+  const response = await fetch(url, {
+    ...options,
+    signal: controller.signal,
+  });
+  clearTimeout(id);
+
+  return response;
+};
+
+/**
+ * Function to check if a server is online or offline
+ *
+ * @param server <Server>
+ * @returns Promise<boolean>
+ */
 const checkServerStatus = async (server: Server): Promise<boolean> => {
   try {
     const response = await fetchWithTimeout(server.url, {
@@ -60,12 +72,19 @@ const checkServerStatus = async (server: Server): Promise<boolean> => {
   return false;
 };
 
-// Function to find the online server with the lowest priority
+/**
+ * Function to find the online server with the lowest priority
+ *
+ * @returns Promise<Server>
+ */
 export const findServer = async (): Promise<Server> => {
+  // Calling parallel to check online servers
   const onlineServerStatues = await Promise.all(
     serverList.map(checkServerStatus)
   );
 
+  // Filter the online servers
+  // Then sort by the priority
   const sortedOnlineServers = serverList
     .filter((_, index) => onlineServerStatues[index])
     .sort((a, b) => a.priority - b.priority);
