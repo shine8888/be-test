@@ -1,0 +1,25 @@
+{
+  "name": "be-test",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest --runInBand --watchAll",
+    "start": "nodemon --watch \"*.ts\" --exec \"ts-node\" ./main.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@jest/types": "^29.6.3",
+    "@types/jest": "^29.5.4",
+    "jest-fetch-mock": "^3.0.3",
+    "nodemon": "^3.0.1",
+    "ts-jest": "^29.1.1"
+  },
+  "dependencies": {
+    "jest": "^29.6.4",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.2.2"
+  }
+}
